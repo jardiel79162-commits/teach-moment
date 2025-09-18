@@ -1,13 +1,52 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import { LoginForm } from "@/components/LoginForm";
+import { ProfessorDashboard } from "@/components/ProfessorDashboard";
+import { StudentDashboard } from "@/components/StudentDashboard";
+
+type UserType = "none" | "professor" | "student";
+
+interface StudentData {
+  name: string;
+  matricula: string;
+}
 
 const Index = () => {
+  const [userType, setUserType] = useState<UserType>("none");
+  const [studentData, setStudentData] = useState<StudentData | null>(null);
+
+  const handleProfessorLogin = () => {
+    setUserType("professor");
+  };
+
+  const handleStudentLogin = (name: string, matricula: string) => {
+    setStudentData({ name, matricula });
+    setUserType("student");
+  };
+
+  const handleLogout = () => {
+    setUserType("none");
+    setStudentData(null);
+  };
+
+  if (userType === "professor") {
+    return <ProfessorDashboard onLogout={handleLogout} />;
+  }
+
+  if (userType === "student" && studentData) {
+    return (
+      <StudentDashboard
+        studentName={studentData.name}
+        studentMatricula={studentData.matricula}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <LoginForm
+      onProfessorLogin={handleProfessorLogin}
+      onStudentLogin={handleStudentLogin}
+    />
   );
 };
 
